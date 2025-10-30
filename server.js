@@ -37,6 +37,10 @@ app.post('/api/chat', async (req, res) => {
       messages: [{ role: 'user', content: message }],
     });
 
+    if (!completion.choices || completion.choices.length === 0) {
+      return res.status(500).json({ error: 'No response from OpenAI' });
+    }
+
     const response = completion.choices[0].message.content;
 
     res.json({
