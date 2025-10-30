@@ -60,6 +60,15 @@ curl -X POST http://localhost:3000/api/chat \
   -d '{"message": "Tell me a quote about coding"}'
 ```
 
+## Testing
+
+A test script is provided to verify the API endpoints:
+```bash
+./test-api.sh
+```
+
+Note: Make sure the server is running before executing the test script.
+
 ## Environment Variables
 
 - `OPENAI_API_KEY` - Your OpenAI API key (required)
