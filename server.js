@@ -27,35 +27,35 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({ error: 'OpenAI API key not configured' });
-    }
+    // Load your nightly thoughts as examples
+    const fs = require('fs');
+    const path = require('path');
+    const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'combined_transcriptions.json')));
+
+    const examples = Object.values(data).slice(0, 10).join('\n\n');
 
     // Call OpenAI API
     const completion = await openai.chat.completions.create({
-      model: model,
-      messages: [{ role: 'user', content: message }],
+      model,
+      messages: [
+        { role: 'system', content: 'You are a calm and inspiring assistant that writes short, reflective nightly thoughts. Each response should feel personal, wise, and written in a minimalist, human tone.' },
+        { role: 'user', content: `Here are example nightly thoughts:\n\n${examples}\n\nNow, write one new nightly thought inspired by these.` },
+      ],
     });
-
-    if (!completion.choices || completion.choices.length === 0) {
-      return res.status(500).json({ error: 'No response from OpenAI' });
-    }
 
     const response = completion.choices[0].message.content;
 
     res.json({
       success: true,
-      response: response,
-      model: model,
+      response,
+      model,
     });
   } catch (error) {
     console.error('Error calling OpenAI API:', error);
-    res.status(500).json({
-      error: 'Failed to get response from OpenAI',
-      details: error.message,
-    });
+    res.status(500).json({ error: error.message });
   }
 });
+
 
 app.listen(port, () => {
   console.log(`QuoteBot server listening on port ${port}`);
