@@ -18,11 +18,13 @@ curl -s -X POST "$API_URL/api/chat" \
   -d '{}' | jq .
 echo ""
 
-# Test chat endpoint with message
+# Test chat endpoint with message (should return a nightly thought)
 echo "3. Testing chat endpoint with message..."
 curl -s -X POST "$API_URL/api/chat" \
   -H "Content-Type: application/json" \
-  -d '{"message": "Tell me a quote about coding"}' | jq .
+  -d '{"message": "Tell me a quote about coding", "model": "gpt-4o-mini"}' | jq .
 echo ""
+
+echo "If successful, you should see a 'success: true', a 'response' field with a nightly thought, and the 'model' used."
 
 echo "Tests completed!"
